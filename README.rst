@@ -4,7 +4,7 @@ SSH Custodian
 
 This module depends on the Custodian class in the `custodian project
 <https://github.com/materialsproject/custodian>`_, which is a wrapper that
-manages jobs running on computing clusters. The Custodian module is part of
+manages jobs running on computing clusters. The custodian module is part of
 `The Materials Project <http://materialsproject.org/>`_.
 
 This module extends the Custodian class by creating the subclass SSHCustodian,
