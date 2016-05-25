@@ -78,7 +78,7 @@ class SSHCustodian(Custodian):
             self.scratch_dir_node_only = scratch_dir_node_only
             self.pbs_nodefile = pbs_nodefile
             self.slave_compute_node_list = (
-                self._process_pbs_nodefile(self.pbs_nodefile))
+                self._process_pbs_nodefile(self.pbs_nodefile, self.hostname))
         else:
             self.scratch_dir_node_only = False
             self.pbs_nodefile = None
