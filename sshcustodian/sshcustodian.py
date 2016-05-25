@@ -1,4 +1,4 @@
-# File: sshcustodian.py
+# File: sshcustodian/sshcustodian.py
 # -*- coding: utf-8 -*-
 
 # Python 2/3 Compatibility
