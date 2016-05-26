@@ -55,7 +55,7 @@ how SSHCustodian can be used in a script is the following::
                                        NonConvergingErrorHandler,
                                        PotimErrorHandler)
   from custodian.vasp.validators import VasprunXMLValidator
-  from sshcustodian.vasp.jobs import SSHVaspJob
+  from sshcustodian.vasp.sshjobs import SSHVaspJob
   from pymatgen.io.vasp import VaspInput
 
   FORMAT = '%(asctime)s %(message)s'
@@ -115,7 +115,7 @@ how SSHCustodian can be used in a script is the following::
 
   logging.info("Handlers used are %s" % args.handlers)
   scratch_root = os.path.abspath("/scratch")
-  pbs_nodefile = os.environ["PBS_NODEFILE"]
+  pbs_nodefile = os.environ.get("PBS_NODEFILE")
   job_args = VaspInputArgs()
   job_dict = {"command": "pvasp",
               "jobs": ["static"]}
