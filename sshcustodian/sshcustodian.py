@@ -185,6 +185,31 @@ class SSHCustodian(Custodian):
         else:
             pass
 
+    def _update_node_scratch(self, temp_dir_path, job):
+        """
+        Method to update the scratch partitions on the slave compute nodes
+        if they exist and are running a VASP job.
+
+        Args:
+            temp_dir_path (str): The path to the temporary scratch directory.
+            job (object): The job object you intend to run. Currently supports
+                VASP jobs.
+        """
+        if self.scratch_dir is not None:
+            try:
+                jobtype = job.get_jobtype()
+                if self.scratch_dir_node_only:
+                    if jobtype == "vasp":
+                        self._update_slave_node_vasp_input_files(temp_dir_path)
+                    else:
+                        pass
+                else:
+                    pass
+            except:
+                pass
+        else:
+            pass
+
     def run(self):
         """
         Override of Custodian.run() to include instructions to copy the
@@ -208,7 +233,7 @@ class SSHCustodian(Custodian):
                 # skip jobs until the restart
                 for job_n, job in islice(enumerate(self.jobs, 1),
                                          self.restart, None):
-                    self._run_job(job_n, job)
+                    self._run_job(job_n, job, temp_dir)
                     # Checkpoint after each job so that we can recover from
                     # last point and remove old checkpoints
                     if self.checkpoint:
@@ -239,7 +264,7 @@ class SSHCustodian(Custodian):
 
         return self.run_log
 
-    def _run_job(self, job_n, job):
+    def _run_job(self, job_n, job, temp_dir):
         """
         Overrides custodian.custodian._run_job() to propagate changes to input
         files on different scratch partitions on compute nodes, if needed.
@@ -248,6 +273,9 @@ class SSHCustodian(Custodian):
         job.setup()
 
         for attempt in range(1, self.max_errors - self.total_errors + 1):
+            # Propagate updated input files, if needed
+            self._update_node_scratch(temp_dir, job)
+
             logger.info(
                 "Starting job no. {} ({}) attempt no. {}. Errors "
                 "thus far = {}.".format(
