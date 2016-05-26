@@ -101,5 +101,9 @@ class SSHVaspJob(VaspJob):
         if self.settings_override is not None:
             VaspModder().apply_actions(self.settings_override)
 
+    @staticmethod
+    def get_jobtype():
+        return "vasp"
+
     # Inherit docstrings
     setup.__doc__ += VaspJob.setup.__doc__
