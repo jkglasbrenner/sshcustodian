@@ -4,7 +4,6 @@
 # Python 2/3 Compatibility
 from __future__ import (unicode_literals, division, absolute_import,
                         print_function)
-from builtins import super
 from six.moves import filterfalse
 """
 This module creates a subclass of the main Custodian class in the Custodian
