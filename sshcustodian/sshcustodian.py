@@ -340,3 +340,4 @@ class SSHCustodian(Custodian):
     # Inherit Custodian docstrings
     __init__.__doc__ = Custodian.__init__.__doc__ + __init__.__doc__
     run.__doc__ = Custodian.run.__doc__
+    _run_job.__doc__ = Custodian._run_job.__doc__
