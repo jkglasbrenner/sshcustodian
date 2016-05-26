@@ -34,7 +34,8 @@ from monty.shutil import gzip_dir
 from monty.json import MontyEncoder
 from monty.serialization import dumpfn
 
-from custodian import Custodian
+from custodian.custodian import Custodian
+from custodian.custodian import CustodianError
 
 # Module-level logger
 logger = logging.getLogger(__name__)
@@ -182,7 +183,7 @@ class SSHCustodian(Custodian):
                     # last point and remove old checkpoints
                     if self.checkpoint:
                         super(SSHCustodian, self)._save_checkpoint(cwd, job_n)
-            except super(SSHCustodian, self).CustodianError as ex:
+            except CustodianError as ex:
                 logger.error(ex.message)
                 if ex.raises:
                     raise RuntimeError("{} errors reached: {}. Exited..."
