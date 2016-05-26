@@ -209,6 +209,76 @@ class SSHCustodian(Custodian):
 
         return self.run_log
 
+    def _run_job(self, job_n, job):
+        """
+        Overrides custodian.custodian._run_job() to propagate changes to input
+        files on different scratch partitions on compute nodes, if needed.
+        """
+        self.run_log.append({"job": job.as_dict(), "corrections": []})
+        job.setup()
+
+        for attempt in range(1, self.max_errors - self.total_errors + 1):
+            logger.info(
+                "Starting job no. {} ({}) attempt no. {}. Errors "
+                "thus far = {}.".format(
+                    job_n, job.name, attempt, self.total_errors))
+
+            p = job.run()
+            # Check for errors using the error handlers and perform
+            # corrections.
+            has_error = False
+
+            # While the job is running, we use the handlers that are
+            # monitors to monitor the job.
+            if isinstance(p, subprocess.Popen):
+                if self.monitors:
+                    n = 0
+                    while True:
+                        n += 1
+                        time.sleep(self.polling_time_step)
+                        if p.poll() is not None:
+                            break
+                        if n % self.monitor_freq == 0:
+                            has_error = self._do_check(self.monitors,
+                                                       p.terminate)
+                else:
+                    p.wait()
+
+            logger.info("{}.run has completed. "
+                        "Checking remaining handlers".format(job.name))
+            # Check for errors again, since in some cases non-monitor
+            # handlers fix the problems detected by monitors
+            # if an error has been found, not all handlers need to run
+            if has_error:
+                self._do_check([h for h in self.handlers
+                                if not h.is_monitor])
+            else:
+                has_error = self._do_check(self.handlers)
+
+            # If there are no errors detected, perform
+            # postprocessing and exit.
+            if not has_error:
+                for v in self.validators:
+                    if v.check():
+                        s = "Validation failed: {}".format(v)
+                        raise CustodianError(s, True, v)
+                job.postprocess()
+                return
+
+            # check that all errors could be handled
+            for x in self.run_log[-1]["corrections"]:
+                if not x["actions"] and x["handler"].raises_runtime_error:
+                    s = "Unrecoverable error for handler: {}. " \
+                        "Raising RuntimeError".format(x["handler"])
+                    raise CustodianError(s, True, x["handler"])
+            for x in self.run_log[-1]["corrections"]:
+                if not x["actions"]:
+                    s = "Unrecoverable error for handler: %s" % x["handler"]
+                    raise CustodianError(s, False, x["handler"])
+
+        logger.info("Max errors reached.")
+        raise CustodianError("MaxErrors", True)
+
     # Inherit Custodian docstrings
     __init__.__doc__ = Custodian.__init__.__doc__ + __init__.__doc__
     run.__doc__ = Custodian.run.__doc__
