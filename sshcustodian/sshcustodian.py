@@ -255,6 +255,11 @@ class SSHCustodian(Custodian):
                 run_time = end - start
                 logger.info("Run completed. Total time taken = {}."
                             .format(run_time))
+                # Remove duplicate copy of log file, provided it ends with
+                # ".log"
+                for x in ([x for x in os.listdir(temp_dir)
+                           if re.match(r'\w*\.log', x)]):
+                    os.remove(os.path.join(temp_dir, x))
                 self._manage_node_scratch(temp_dir_path=temp_dir,
                                           job_start=False)
                 if self.gzipped_output:
