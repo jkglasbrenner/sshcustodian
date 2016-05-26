@@ -4,7 +4,7 @@
 # Python 2/3 Compatibility
 from __future__ import (unicode_literals, division, absolute_import,
                         print_function)
-from six.moves import filterfalse
+from six.moves import filter, filterfalse
 """
 This module creates a subclass of the main Custodian class in the Custodian
 project (github.com/materialsproject/custodian), which is a wrapper that
@@ -110,6 +110,36 @@ class SSHCustodian(Custodian):
                                         os.path.abspath(self.scratch_dir))]
             p = subprocess.Popen(command, shell=False)
             process_list.append(p)
+        # Wait for syncing to finish before moving on
+        for process in process_list:
+            process.wait()
+
+    def _update_slave_node_input_files(self, temp_dir_path):
+        """
+        Update the input files in the scratch partition on the slave compute
+        nodes.
+
+        Args:
+            temp_dir_path (str): The path to the temporary scratch directory.
+                It is assumed here that the root path of the scratch directory
+                is the same on all nodes.
+        """
+        VASP_INPUT_FILES = filter(os.path.exists,
+                                  ["{0}/CHGCAR".format(temp_dir_path),
+                                   "{0}/WAVECAR".format(temp_dir_path),
+                                   "{0}/INCAR".format(temp_dir_path),
+                                   "{0}/POSCAR".format(temp_dir_path),
+                                   "{0}/POTCAR".format(temp_dir_path),
+                                   "{0}/KPOINTS".format(temp_dir_path)])
+        process_list = []
+        for node in self.slave_compute_node_list:
+            for filename in VASP_INPUT_FILES:
+                command = ['rsync', '-azhq',
+                           "{0}/{1}".format(temp_dir_path, filename),
+                           '{0}:{1}/{2}'.format(node,
+                                                temp_dir_path, filename)]
+                p = subprocess.Popen(command, shell=False)
+                process_list.append(p)
         # Wait for syncing to finish before moving on
         for process in process_list:
             process.wait()
