@@ -113,7 +113,6 @@ how SSHCustodian can be used in a script is the following::
                            copy_magmom=copy_magmom, auto_npar=auto_npar)
 
 
-  logging.info("Handlers used are %s" % args.handlers)
   scratch_root = os.path.abspath("/scratch")
   pbs_nodefile = os.environ.get("PBS_NODEFILE")
   job_args = VaspInputArgs()
@@ -124,6 +123,7 @@ how SSHCustodian can be used in a script is the following::
               UnconvergedErrorHandler(), NonConvergingErrorHandler(),
               PotimErrorHandler()]
   validators = [VasprunXMLValidator()]
+  logging.info("Handlers used are {0}".format(handlers))
   c = SSHCustodian(handlers, get_runs(job_args), validators,
                    checkpoint=True,
                    scratch_dir=scratch_root,
