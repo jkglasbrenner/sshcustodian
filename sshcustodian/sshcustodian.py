@@ -96,7 +96,7 @@ class SSHCustodian(Custodian):
 
     def _copy_to_slave_node_dirs(self, temp_dir_path):
         """
-        Copy temporary directory from head node to other nodes.
+        Copy temporary scratch directory from master node to other nodes.
 
         Args:
             temp_dir_path (str): The path to the temporary scratch directory.
@@ -116,7 +116,7 @@ class SSHCustodian(Custodian):
 
     def _delete_slave_node_dirs(self, temp_dir_path):
         """
-        Delete the temporary directory on the non-head nodes.
+        Delete the temporary scratch directory on the slave nodes.
 
         Args:
             temp_dir_path (str): The path to the temporary scratch directory.
