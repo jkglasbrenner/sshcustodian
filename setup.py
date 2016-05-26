@@ -18,7 +18,7 @@ setup(
     name='SSHCustodian',
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     install_requires=['custodian', 'six', 'monty'],
-    version='0.2.0',
+    version='0.2.1',
     description=('A modification to the Custodian class in custodian '
                  '(github.com/materialsproject/custodian) to allow for '
                  'copying the temp_dir to other compute nodes via ssh.'),
@@ -26,7 +26,7 @@ setup(
     author='James K. Glasbrenner',
     author_email='jkglasbrenner@gmail.com',
     url='https://github.com/jkglasbrenner/sshcustodian',
-    download_url='https://github.com/jkglasbrenner/sshcustodian/tarball/0.2.0',
+    download_url='https://github.com/jkglasbrenner/sshcustodian/tarball/0.2.1',
     license='MIT',
     keywords='custodian DFT VASP materials hpc queue management',
     classifiers=[
