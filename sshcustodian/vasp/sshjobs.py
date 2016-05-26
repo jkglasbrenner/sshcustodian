@@ -76,9 +76,16 @@ class SSHVaspJob(VaspJob):
                         del incar["NPAR"]
                     else:
                         import multiprocessing
-                        # try sge environment variable first
-                        # (since multiprocessing counts cores on the current machine only)
-                        ncores = os.environ.get('NSLOTS') or multiprocessing.cpu_count()
+                        # try pbs environment variable first
+                        # try sge environment variable second
+                        # Note!
+                        # multiprocessing.cpu_count() will include hyperthreads
+                        # in the CPU count, which will set NPAR to be too large
+                        # and can cause the job to hang if you use compute
+                        # nodes with scratch partitions.
+                        ncores = (os.environ.get("PBS_NUM_NODES") or
+                                  os.environ.get('NSLOTS') or
+                                  multiprocessing.cpu_count())
                         ncores = int(ncores)
                         for npar in range(int(math.sqrt(ncores)),
                                           ncores):
