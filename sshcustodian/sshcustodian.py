@@ -114,9 +114,9 @@ class SSHCustodian(Custodian):
         for process in process_list:
             process.wait()
 
-    def _update_slave_node_input_files(self, temp_dir_path):
+    def _update_slave_node_vasp_input_files(self, temp_dir_path):
         """
-        Update the input files in the scratch partition on the slave compute
+        Update VASP input files in the scratch partition on the slave compute
         nodes.
 
         Args:
