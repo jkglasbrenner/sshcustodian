@@ -64,7 +64,7 @@ class SSHCustodian(Custodian):
                 a calculation. If this path does not point to a valid file,
                 then scratch_dir_node_only will be automatically set to False.
         """
-        super(SSHCustodian, self).__init__(self, handlers, jobs, validators,
+        super(SSHCustodian, self).__init__(handlers, jobs, validators,
                                            max_errors, polling_time_step,
                                            monitor_freq, skip_over_errors,
                                            scratch_dir, gzipped_output,
