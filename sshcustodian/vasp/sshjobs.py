@@ -21,7 +21,7 @@ from pymatgen.io.vasp import Incar
 from pymatgen.io.smart import read_structure
 
 from custodian.vasp.interpreter import VaspModder
-from custodian.custodian.vasp import VaspJob
+from custodian.vasp.jobs import VaspJob
 
 
 VASP_INPUT_FILES = {"INCAR", "POSCAR", "POTCAR", "KPOINTS"}
