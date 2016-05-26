@@ -6,7 +6,7 @@ from __future__ import (unicode_literals, division, absolute_import,
                         print_function)
 
 """
-Modifies custodian.vasp.jobs() to also check the PBS_NUM_NODES environment
+Modifies custodian.vasp.jobs() to also check the PBS_NUM_PPN environment
 variable.  This is necessary if you plan to use scratch partitions on compute
 nodes in combination with auto_npar = True, as multiprocessing.cpu_count() also
 counts hyperthreads and will set NPAR to be too large.
@@ -34,7 +34,7 @@ VASP_OUTPUT_FILES = ['DOSCAR', 'INCAR', 'KPOINTS', 'POSCAR', 'PROCAR',
 class SSHVaspJob(VaspJob):
     """
     Overrides the setup() method in VaspJob to also check the environment
-    variable PBS_NUM_NODES when auto_npar = True. Note that counting using
+    variable PBS_NUM_PPN when auto_npar = True. Note that counting using
     multiprocessing.cpu_count() includes hyperthreads, which will set NPAR to
     be too large. This can cause jobs to hang when using the scratch partitions
     on compute nodes.
@@ -44,7 +44,7 @@ class SSHVaspJob(VaspJob):
     def setup(self):
         """
         Method is identical to custodian.vasp.jobs.setup(), except that the
-        environment variable PBS_NUM_NODES is checked first when auto_npar =
+        environment variable PBS_NUM_PPN is checked first when auto_npar =
         True.
         """
         files = os.listdir(".")
@@ -85,7 +85,7 @@ class SSHVaspJob(VaspJob):
                         # in the CPU count, which will set NPAR to be too large
                         # and can cause the job to hang if you use compute
                         # nodes with scratch partitions.
-                        ncores = (os.environ.get("PBS_NUM_NODES") or
+                        ncores = (os.environ.get("PBS_NUM_PPN") or
                                   os.environ.get('NSLOTS') or
                                   multiprocessing.cpu_count())
                         ncores = int(ncores)
