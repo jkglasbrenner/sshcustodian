@@ -27,6 +27,7 @@ import sys
 import datetime
 import time
 import os
+import re
 from itertools import islice, groupby
 from socket import gethostname
 
@@ -196,11 +197,12 @@ class SSHCustodian(Custodian):
             job (object): The job object you intend to run. Currently supports
                 VASP jobs.
         """
+        vasp_re = re.compile(r'vasp')
         if self.scratch_dir is not None:
             try:
                 jobtype = job.get_jobtype()
                 if self.scratch_dir_node_only:
-                    if jobtype == "vasp":
+                    if vasp_re.match(jobtype):
                         self._update_slave_node_vasp_input_files(temp_dir_path)
                     else:
                         pass
