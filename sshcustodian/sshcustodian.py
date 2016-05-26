@@ -126,13 +126,13 @@ class SSHCustodian(Custodian):
                 It is assumed here that the root path of the scratch directory
                 is the same on all nodes.
         """
-        VASP_INPUT_FILES = filter(os.path.exists,
-                                  ["{0}/CHGCAR".format(temp_dir_path),
-                                   "{0}/WAVECAR".format(temp_dir_path),
-                                   "{0}/INCAR".format(temp_dir_path),
-                                   "{0}/POSCAR".format(temp_dir_path),
-                                   "{0}/POTCAR".format(temp_dir_path),
-                                   "{0}/KPOINTS".format(temp_dir_path)])
+        VASP_INPUT_FILES = [x for x in ["{0}/CHGCAR".format(temp_dir_path),
+                                        "{0}/WAVECAR".format(temp_dir_path),
+                                        "{0}/INCAR".format(temp_dir_path),
+                                        "{0}/POSCAR".format(temp_dir_path),
+                                        "{0}/POTCAR".format(temp_dir_path),
+                                        "{0}/KPOINTS".format(temp_dir_path)] if
+                            os.path.exists(x)]
         process_list = []
         for node in self.slave_compute_node_list:
             for filepath in VASP_INPUT_FILES:
