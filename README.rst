@@ -31,6 +31,16 @@ and ``pbs_nodefile``::
       calculation. If this path does not point to a valid file, then
       scratch_dir_node_only will be automatically set to False.
 
+The subclass SSHVaspJob was also created, which overrides the setup method to
+also check the environment variable ``PBS_NUM_PPN`` when ``auto_npar =
+True``. This is necessary to implement for using compute node scratch
+partitions on PBS-based queueing systems, as the generic method of using
+``multiprocessing.cpu_count()`` to count the number of cores will include
+hyperthreads, which will overestimate the number of physical cores and lead to
+NPAR being set too large. One consequence of setting NPAR too high is that a
+VASP job will hang, consuming resources but not doing anything useful. If you
+are using this kind of scratch directory, be careful about setting NPAR.
+
 On many clusters, the filepath for the list of compute nodes is in the
 environment variable ``PBS_NODEFILE``, which can be accessed in bash as
 ``$PBS_NODEFILE`` and in python using the ``os`` module. An example of
@@ -45,7 +55,7 @@ how SSHCustodian can be used in a script is the following::
                                        NonConvergingErrorHandler,
                                        PotimErrorHandler)
   from custodian.vasp.validators import VasprunXMLValidator
-  from custodian.vasp.jobs import VaspJob
+  from sshcustodian.vasp.jobs import SSHVaspJob
   from pymatgen.io.vasp import VaspInput
 
   FORMAT = '%(asctime)s %(message)s'
@@ -98,9 +108,9 @@ how SSHCustodian can be used in a script is the following::
                   {'dict': 'KPOINTS',
                    'action': {'_set': {'kpoints': [m]}}}])
       
-          yield VaspJob(vasp_command, final=final, suffix=suffix,
-                        backup=backup, settings_override=settings,
-                        copy_magmom=copy_magmom, auto_npar=auto_npar)
+          yield SSHVaspJob(vasp_command, final=final, suffix=suffix,
+                           backup=backup, settings_override=settings,
+                           copy_magmom=copy_magmom, auto_npar=auto_npar)
 
 
   logging.info("Handlers used are %s" % args.handlers)
