@@ -4,6 +4,10 @@
 from __future__ import unicode_literals, division
 
 """
+Modifies custodian.vasp.jobs() to also check the PBS_NUM_NODES environment
+variable.  This is necessary if you plan to use scratch partitions on compute
+nodes in combination with auto_npar = True, as multiprocessing.cpu_count() also
+counts hyperthreads and will set NPAR to be too large.
 """
 
 import os
@@ -27,7 +31,13 @@ VASP_OUTPUT_FILES = ['DOSCAR', 'INCAR', 'KPOINTS', 'POSCAR', 'PROCAR',
 
 class SSHVaspJob(VaspJob):
     """
+    Overrides the setup() method in VaspJob to also check the environment
+    variable PBS_NUM_NODES when auto_npar = True. Note that counting using
+    multiprocessing.cpu_count() includes hyperthreads, which will set NPAR to
+    be too large. This can cause jobs to hang when using the scratch partitions
+    on compute nodes.
     """
+    __doc__ += VaspJob.__doc__
 
     def __init__(self, vasp_cmd, output_file="vasp.out", suffix="",
                  final=True, backup=True,
@@ -44,6 +54,9 @@ class SSHVaspJob(VaspJob):
 
     def setup(self):
         """
+        Method is identical to custodian.vasp.jobs.setup(), except that the
+        environment variable PBS_NUM_NODES is checked first when auto_npar =
+        True.
         """
         files = os.listdir(".")
         num_structures = 0
@@ -67,7 +80,7 @@ class SSHVaspJob(VaspJob):
         if self.auto_npar:
             try:
                 incar = Incar.from_file("INCAR")
-                #Only optimized NPAR for non-HF and non-RPA calculations.
+                # Only optimized NPAR for non-HF and non-RPA calculations.
                 if not (incar.get("LHFCALC") or incar.get("LRPA") or
                         incar.get("LEPSILON")):
                     if incar.get("IBRION") in [5, 6, 7, 8]:
@@ -98,3 +111,6 @@ class SSHVaspJob(VaspJob):
 
         if self.settings_override is not None:
             VaspModder().apply_actions(self.settings_override)
+
+    # Inherit docstrings
+    setup.__doc__ += VaspJob.setup.__doc__
