@@ -1,7 +1,9 @@
 # File: sshcustodian/vasp/sshjobs.py
 # -*- coding: utf-8 -*-
 
-from __future__ import unicode_literals, division
+# Python 2/3 Compatibility
+from __future__ import (unicode_literals, division, absolute_import,
+                        print_function)
 
 """
 Modifies custodian.vasp.jobs() to also check the PBS_NUM_NODES environment
@@ -10,13 +12,13 @@ nodes in combination with auto_npar = True, as multiprocessing.cpu_count() also
 counts hyperthreads and will set NPAR to be too large.
 """
 
+# Import modules
 import os
 import shutil
 import math
 
 from pymatgen.io.vasp import Incar
 from pymatgen.io.smart import read_structure
-from pymatgen.io.vasp.sets import MPVaspInputSet
 
 from custodian.vasp.interpreter import VaspModder
 from custodian.custodian.vasp import VaspJob
