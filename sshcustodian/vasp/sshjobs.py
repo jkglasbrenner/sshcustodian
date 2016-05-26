@@ -39,19 +39,6 @@ class SSHVaspJob(VaspJob):
     """
     __doc__ += VaspJob.__doc__
 
-    def __init__(self, vasp_cmd, output_file="vasp.out", suffix="",
-                 final=True, backup=True,
-                 default_vasp_input_set=MPVaspInputSet(), auto_npar=True,
-                 auto_gamma=True, settings_override=None,
-                 gamma_vasp_cmd=None, copy_magmom=False):
-        """
-        """
-        super(SSHVaspJob, self).__init__(vasp_cmd, output_file, suffix, final,
-                                         backup, default_vasp_input_set,
-                                         auto_npar, auto_gamma,
-                                         settings_override, gamma_vasp_cmd,
-                                         copy_magmom)
-
     def setup(self):
         """
         Method is identical to custodian.vasp.jobs.setup(), except that the
