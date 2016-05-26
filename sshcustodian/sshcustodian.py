@@ -135,12 +135,10 @@ class SSHCustodian(Custodian):
                                    "{0}/KPOINTS".format(temp_dir_path)])
         process_list = []
         for node in self.slave_compute_node_list:
-            for filename in VASP_INPUT_FILES:
-                command = ['rsync', '-azhq',
-                           "{0}/{1}".format(temp_dir_path, filename),
-                           '{0}:{1}/{2}'.format(node,
-                                                temp_dir_path, filename)]
-                p = subprocess.Popen(command, shell=False)
+            for filepath in VASP_INPUT_FILES:
+                command = 'scp {0} {1}:{2}/'.format(filepath, node,
+                                                    temp_dir_path)
+                p = subprocess.Popen(command, shell=True)
                 process_list.append(p)
         # Wait for syncing to finish before moving on
         for process in process_list:
